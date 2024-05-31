@@ -42,6 +42,10 @@ app.get('/location', (req, res) => {
 
 app.post('/register', async (req, res) => {
   const { username, password, nom, postNom, prenom, dateDeNaissance, sex, numeroCarteElecteur, age } = req.body;
+  if (!username || !password || !nom || !postNom || !prenom || !dateDeNaissance || !sex || !numeroCarteElecteur || !age) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
     const user = await prisma.user.create({
@@ -59,9 +63,10 @@ app.post('/register', async (req, res) => {
     });
     res.status(201).json({ message: 'User registered successfully', user });
   } catch (error) {
-    res.status(400).json({ message: 'User registration failed', error });
+    res.status(400).json({ message: 'User registration failed', error: error.message });
   }
 });
+
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
