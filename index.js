@@ -19,7 +19,6 @@ app.use(cors());
 
 let lastReceivedPosition = null;
 
-
 app.post('/location', authenticateToken, (req, res) => {
   const { latitude, longitude } = req.body;
   
@@ -67,7 +66,6 @@ app.post('/register', async (req, res) => {
   }
 });
 
-
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   const user = await prisma.user.findUnique({ where: { username } });
@@ -87,7 +85,6 @@ app.post('/logout', (req, res) => {
 
 app.get('/user', authenticateToken, async (req, res) => {
   try {
-    console.log('User ID from token:', req.user.id);
     const user = await prisma.user.findUnique({ where: { id: req.user.id } });
     if (user) {
       res.json({ user: { id: user.id, username: user.username } });
@@ -95,7 +92,6 @@ app.get('/user', authenticateToken, async (req, res) => {
       res.status(404).json({ message: 'User not found' });
     }
   } catch (error) {
-    console.error('Error fetching user:', error);
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
