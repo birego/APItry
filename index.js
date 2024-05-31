@@ -86,11 +86,17 @@ app.post('/logout', (req, res) => {
 });
 
 app.get('/user', authenticateToken, async (req, res) => {
-  const user = await prisma.user.findUnique({ where: { id: req.user.id } });
-  if (user) {
-    res.json({ user: { id: user.id, username: user.username } });
-  } else {
-    res.status(404).json({ message: 'User not found' });
+  try {
+    console.log('User ID from token:', req.user.id);
+    const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+    if (user) {
+      res.json({ user: { id: user.id, username: user.username } });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
 
