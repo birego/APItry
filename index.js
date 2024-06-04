@@ -41,12 +41,15 @@ app.get('/location', (req, res) => {
 
 app.post('/register', async (req, res) => {
   const { username, password, nom, postNom, prenom, dateDeNaissance, sex, numeroCarteElecteur } = req.body;
+
+  // Vérification des champs requis
   if (!username || !password || !nom || !postNom || !prenom || !dateDeNaissance || !sex || !numeroCarteElecteur) {
-    return res.status(400).json({ message: 'All fields are required' });
+    return res.status(400).json({ message: 'Tous les champs sont requis' });
   }
 
+  // Validation du sexe
   if (!['M', 'F'].includes(sex)) {
-    return res.status(400).json({ message: 'Invalid sex value' });
+    return res.status(400).json({ message: 'Valeur du sexe invalide' });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -63,20 +66,9 @@ app.post('/register', async (req, res) => {
         numeroCarteElecteur,
       },
     });
-    res.status(201).json({ message: 'User registered successfully', user });
+    res.status(201).json({ message: 'Utilisateur enregistré avec succès', user });
   } catch (error) {
-    res.status(400).json({ message: 'User registration failed', error: error.message });
-  }
-});
-app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const user = await prisma.user.findUnique({ where: { username } });
-  
-  if (user && await bcrypt.compare(password, user.password)) {
-    const token = jwt.sign({ id: user.id }, secretKey, { expiresIn: '1h' });
-    res.json({ token });
-  } else {
-    res.status(401).json({ message: 'Invalid credentials' });
+    res.status(400).json({ message: "Échec de l'enregistrement de l'utilisateur", error: error.message });
   }
 });
 
