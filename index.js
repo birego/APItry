@@ -40,9 +40,13 @@ app.get('/location', (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-  const { username, password, nom, postNom, prenom, dateDeNaissance, sex, numeroCarteElecteur, age } = req.body;
-  if (!username || !password || !nom || !postNom || !prenom || !dateDeNaissance || !sex || !numeroCarteElecteur || !age) {
+  const { username, password, nom, postNom, prenom, dateDeNaissance, sex, numeroCarteElecteur } = req.body;
+  if (!username || !password || !nom || !postNom || !prenom || !dateDeNaissance || !sex || !numeroCarteElecteur) {
     return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  if (!['M', 'F'].includes(sex)) {
+    return res.status(400).json({ message: 'Invalid sex value' });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -57,7 +61,6 @@ app.post('/register', async (req, res) => {
         dateDeNaissance: new Date(dateDeNaissance),
         sex,
         numeroCarteElecteur,
-        age,
       },
     });
     res.status(201).json({ message: 'User registered successfully', user });
@@ -65,7 +68,6 @@ app.post('/register', async (req, res) => {
     res.status(400).json({ message: 'User registration failed', error: error.message });
   }
 });
-
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   const user = await prisma.user.findUnique({ where: { username } });
