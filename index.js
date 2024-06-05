@@ -61,7 +61,7 @@ app.post('/register', async (req, res) => {
         nom,
         postNom,
         prenom,
-        dateDeNaissance: new Date(dateDeNaissance),
+        dateDeNaissance: new Date(dateDeNaissance), // Conversion de la date
         sex,
         numeroCarteElecteur,
       },
@@ -71,6 +71,7 @@ app.post('/register', async (req, res) => {
     res.status(400).json({ message: "Échec de l'enregistrement de l'utilisateur", error: error.message });
   }
 });
+
 
 app.post('/logout', (req, res) => {
   // Invalidate the token on the client side
