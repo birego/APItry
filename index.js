@@ -95,7 +95,18 @@ app.get('/user', authenticateToken, async (req, res) => {
   try {
     const user = await prisma.user.findUnique({ where: { id: req.user.id } });
     if (user) {
-      res.json({ user: { id: user.id, username: user.username } });
+      res.json({
+        user: {
+          id: user.id,
+          username: user.username,
+          nom: user.nom,
+          postNom: user.postNom,
+          prenom: user.prenom,
+          dateDeNaissance: user.dateDeNaissance,
+          sex: user.sex,
+          numeroCarteElecteur: user.numeroCarteElecteur
+        }
+      });
     } else {
       res.status(404).json({ message: 'User not found' });
     }
@@ -103,6 +114,7 @@ app.get('/user', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le http://localhost:${PORT}`);
