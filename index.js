@@ -72,6 +72,19 @@ app.post('/register', async (req, res) => {
   }
 });
 
+//mogin
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  const user = await prisma.user.findUnique({ where: { username } });
+  
+  if (user && await bcrypt.compare(password, user.password)) {
+    const token = jwt.sign({ id: user.id }, secretKey, { expiresIn: '1h' });
+    res.json({ token });
+  } else {
+    res.status(401).json({ message: 'Invalid credentials' });
+  }
+});
+
 
 app.post('/logout', (req, res) => {
   // Invalidate the token on the client side
